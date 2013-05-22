@@ -40,6 +40,23 @@
     <developerConnection>scm:git:git@github.com:xwiki-contrib/macro-tooltip.git</developerConnection>
     <url>https://github.com/xwiki-contrib/macro-tooltip.git</url>
   </scm>
+  <developers>
+    <developer>
+      <id>sdumitriu</id>
+      <name>Sergiu Dumitriu</name>
+      <email>sergiu@xwiki.org</email>
+    </developer>
+    <developer>
+      <id>jvelo</id>
+      <name>Jérôme Velociter</name>
+      <email>jerome@velociter.fr</email>
+    </developer>
+    <developer>
+      <id>rstavro</id>
+      <name>Raluca Stavro</name>
+      <email>raluca.morosan@xwiki.com</email>
+    </developer>
+  </developers>
   <properties>
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
