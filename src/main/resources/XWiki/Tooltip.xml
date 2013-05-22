@@ -1,0 +1,1114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>XWiki</web>
+<name>Tooltip</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent> </parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1265058700000</creationDate>
+<date>1369229882000</date>
+<contentUpdateDate>1369227740000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>onDemand=On demand|always=Always</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>b757dc45-821f-4d59-b834-9d3027fa7c5d</guid>
+<property>
+<cache>default</cache>
+</property>
+<property>
+<code>/*
+ * Copyright (c) 2006 Jonathan Weiss &lt;jw@innerewut.de&gt;
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+/* tooltip-0.2.js - Small tooltip library on top of Prototype 
+ * by Jonathan Weiss &lt;jw@innerewut.de&gt; distributed under the BSD license. 
+ *
+ * This tooltip library works in two modes. If it gets a valid DOM element 
+ * or DOM id as an argument it uses this element as the tooltip. This 
+ * element will be placed (and shown) near the mouse pointer when a trigger-
+ * element is moused-over.
+ * If it gets only a text as an argument instead of a DOM id or DOM element
+ * it will create a div with the classname 'tooltip' that holds the given text.
+ * This newly created div will be used as the tooltip. This is usefull if you 
+ * want to use tooltip.js to create popups out of title attributes.
+ * 
+ *
+ * Usage: 
+ *   &lt;script src="/javascripts/prototype.js" type="text/javascript"&gt;&lt;/script&gt;
+ *   &lt;script src="/javascripts/tooltip.js" type="text/javascript"&gt;&lt;/script&gt;
+ *   &lt;script type="text/javascript"&gt;
+ *     // with valid DOM id
+ *     var my_tooltip = new Tooltip('id_of_trigger_element', 'id_of_tooltip_to_show_element')
+ *
+ *     // with text
+ *     var my_other_tooltip = new Tooltip('id_of_trigger_element', 'a nice description')
+ *
+ *     // create popups for each element with a title attribute
+ *    Event.observe(window,"load",function() {
+ *      $$("*").findAll(function(node){
+ *        return node.getAttribute('title');
+ *      }).each(function(node){
+ *        new Tooltip(node,node.title);
+ *        node.removeAttribute("title");
+ *      });
+ *    });
+ *    
+ *   &lt;/script&gt;
+ * 
+ * Now whenever you trigger a mouseOver on the `trigger` element, the tooltip element will
+ * be shown. On o mouseOut the tooltip disappears. 
+ * 
+ * Example:
+ * 
+ *   &lt;script src="/javascripts/prototype.js" type="text/javascript"&gt;&lt;/script&gt;
+ *   &lt;script src="/javascripts/scriptaculous.js" type="text/javascript"&gt;&lt;/script&gt;
+ *   &lt;script src="/javascripts/tooltip.js" type="text/javascript"&gt;&lt;/script&gt;
+ *
+ *   &lt;div id='tooltip' style="display:none; margin: 5px; background-color: red;"&gt;
+ *     Detail infos on product 1....&lt;br /&gt;
+ *   &lt;/div&gt;
+ *
+ *   &lt;div id='product_1'&gt;
+ *     This is product 1
+ *   &lt;/div&gt;
+ *
+ *   &lt;script type="text/javascript"&gt;
+ *     var my_tooltip = new Tooltip('product_1', 'tooltip')
+ *   &lt;/script&gt;
+ *
+ * You can use my_tooltip.destroy() to remove the event observers and thereby the tooltip.
+ */
+
+var Tooltip = Class.create();
+Tooltip.prototype = {
+  initialize: function(element, tool_tip) {
+    var options = Object.extend({
+      default_css: false,
+      margin: "0px",
+      padding: "5px",
+      backgroundColor: "#d6d6fc",
+      min_distance_x: 5,
+      min_distance_y: 5,
+      delta_x: 0,
+      delta_y: 0,
+      zindex: 1000
+    }, arguments[2] || {});
+
+    this.element      = $(element);
+
+    this.options      = options; 
+
+    this.tool_tipMask = null;
+
+    // add class name for element
+    if(!element.hasClassName('tooltipHint') &amp;&amp; !element.hasClassName('tooltipLabelId')){
+      element.addClassName('tooltipHintById');
+    }
+
+    // use the supplied tooltip element or create our own div
+    if($(tool_tip)) {
+      this.tool_tip = $(tool_tip);
+      this.tool_tipMask = $(tool_tip);
+    } else {
+      // insert tooltip into the dom
+      this.tool_tip = $(document.createElement("div")); 
+      document.body.appendChild(this.tool_tip);
+      this.tool_tip.addClassName("tooltip");
+      this.tool_tip.update(tool_tip);
+      this.tool_tipMask = element.next('.tooltip.hidden');
+      // set tooltip styles
+      this.tool_tip.writeAttribute('style', this.tool_tipMask.readAttribute('style'));
+      // set event name
+      var event = element.next('.tooltipEvent.hidden').innerHTML;
+      this.event = event ? event : 'mouseover';
+      // add title bar
+      if(this.event == 'click'){
+        this.tool_tip.insert({
+          top: '&lt;div class="tooltip-titlebar"&gt;&lt;div class="tooltip-title"&gt;' + this.element.innerHTML + '&lt;/div&gt;&lt;div class="tooltip-close"&gt;x&lt;/div&gt;&lt;/div&gt;'
+        });
+      }
+    }   
+
+    // hide the tool-tip by default
+    this.tool_tip.hide();
+
+    this.eventMouseOver = this.showTooltip.bindAsEventListener(this);
+    this.eventMouseOut   = this.hideTooltip.bindAsEventListener(this);
+    this.eventMouseMove  = this.moveTooltip.bindAsEventListener(this);
+ 
+    // build events map
+    this.eventsMap = { 'mouseover' : { 'element' :  { 'mouseover' : this.eventMouseOver,
+                                                      'mouseout' : this.eventMouseOut, 
+                                                      'mousemove' : this.eventMouseMove },
+                                       'tool_tip' : {}
+                                     },
+                       'click' :     { 'element' :  { 'click' : this.eventMouseOver },
+                                       'tool_tip' : { 'click' : this.eventMouseOut }
+                                     } 
+                     };
+
+    this.registerEvents();
+  },
+
+  destroy: function() {
+    for(var key in this.eventsMap[this.event]){
+      for(var event in this.eventsMap[this.event][key]){
+        var elem = (key == 'element') ? this.element : this.tool_tip;
+        Event.stopObserving(elem, event, this.eventsMap[this.event][key][event]);
+      }
+    }
+  },
+
+  registerEvents: function() {
+    for(var key in this.eventsMap[this.event]){
+      for(var event in this.eventsMap[this.event][key]){
+        var elem = (key == 'element') ? this.element : this.tool_tip;
+        Event.observe(elem, event, this.eventsMap[this.event][key][event]);
+      }
+    }
+  },
+
+  moveTooltip: function(event){
+    Event.stop(event);
+    // get Mouse position
+    var mouse_x = Event.pointerX(event);
+    var mouse_y = Event.pointerY(event);
+	
+    // decide if wee need to switch sides for the tooltip
+    var dimensions = Element.getDimensions( this.tool_tip );
+    var element_width = this.tool_tipMask.style.width ? this.tool_tipMask.style.width : dimensions.width;
+    var element_height = dimensions.height;
+	
+    if ( (element_width + mouse_x) &gt;= ( this.getWindowWidth() - this.options.min_distance_x) ){ // too big for X
+      mouse_x = mouse_x - element_width;
+      // apply min_distance to make sure that the mouse is not on the tool-tip
+      mouse_x = mouse_x - this.options.min_distance_x;
+    } else {
+      mouse_x = mouse_x + this.options.min_distance_x;
+    }
+	
+    if ( (element_height + mouse_y) &gt;= ( this.getWindowHeight() - this.options.min_distance_y) ){ // too big for Y
+      mouse_y = mouse_y - element_height;
+      // apply min_distance to make sure that the mouse is not on the tool-tip
+      mouse_y = mouse_y - this.options.min_distance_y;
+    } else {
+      mouse_y = mouse_y + this.options.min_distance_y;
+    } 
+	
+    // now set the right styles
+    this.setStyles(mouse_x, mouse_y);
+  },
+	
+		
+  showTooltip: function(event) {
+    Event.stop(event);
+    this.moveTooltip(event);
+    new Element.show(this.tool_tip);
+  },
+  
+  setStyles: function(x, y){
+    // set the right styles to position the tool tip
+    Element.setStyle(this.tool_tip, { position:'absolute',
+                                      top:y + this.options.delta_y + "px",
+                                      left:x + this.options.delta_x + "px",
+                                      zindex:this.options.zindex
+    });
+	
+    // apply default theme if wanted
+    if (this.options.default_css){
+      Element.setStyle(this.tool_tip, { margin:this.options.margin,
+                                        padding:this.options.padding,
+                                        backgroundColor:this.options.backgroundColor,
+                                        zindex:this.options.zindex
+      });	
+    }	
+  },
+
+  hideTooltip: function(event){
+    new Element.hide(this.tool_tip);
+  },
+
+  getWindowHeight: function(){
+    var innerHeight;
+    if (navigator.appVersion.indexOf('MSIE')&gt;0) {
+      innerHeight = document.body.clientHeight;
+    } else {
+      innerHeight = window.innerHeight;
+    }
+    return innerHeight;	
+  },
+ 
+  getWindowWidth: function(){
+    var innerWidth;
+    if (navigator.appVersion.indexOf('MSIE')&gt;0) {
+      innerWidth = document.body.clientWidth;
+    } else {
+      innerWidth = window.innerWidth;
+    }
+    return innerWidth;	
+  }
+
+}
+
+document.observe("dom:loaded", function() {
+  $('mainContentArea').select('.tooltipHint', '.tooltipHint.withoutIcon').each(function(hint){
+    new Tooltip(hint, hint.next('.tooltip.hidden').innerHTML);
+  });
+  $('mainContentArea').select('.tooltipLabelId.hidden').each(function(elem){
+    new Tooltip($(elem.innerHTML), elem.next('.tooltip.hidden').innerHTML);
+  });
+});
+</code></property><property><name></name></property><property><parse>0</parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.RequiredRightClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<level>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>level</name>
+<number>1</number>
+<picker>0</picker>
+<prettyName>level</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values>edit|programming</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</level>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.RequiredRightClass</className>
+<guid>f88a53f8-0a35-4c8b-88df-7f77025f98e3</guid>
+<property>
+<level>programming</level>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>onDemand=On demand|always=Always</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>a0c6d429-0637-4bad-8e73-03974e677170</guid>
+<property>
+<cache>default</cache>
+</property>
+<property>
+<code>#template('colorThemeInit.vm')
+
+.tooltipHint {
+  color: $theme.linkColor;
+  background:url($xwiki.getSkinFile('icons/silk/help.gif')) right no-repeat;
+  /* +++ */
+  padding-right:18px;
+  /* --- */
+}
+
+div.tooltip {
+  top: 0;
+  left: 0;
+  width: 300px;
+  padding: 4px;
+  /* +++ */
+  font-size: 0.9em;
+  /* --- */
+  font-weight: normal;
+  text-align: left;
+  /* +++ */ 
+  /*color: $theme.menuLinkColor;
+  background-color: $theme.menuBackgroundColor;  */ 
+  color: $theme.textColor;
+  background-color: $theme.backgroundSecondaryColor;
+  border: 1px solid $theme.borderColor; 
+  /* --- */
+  z-index: 9998;
+  text-align:justify;
+}
+
+/* +++ */
+.withoutIcon{
+  background-image: none;
+  padding-right: 0;
+  cursor: help;
+}
+div.tooltip-titlebar {
+  background-color: $theme.menuBackgroundColor;
+  color: $theme.menuLinkColor;
+  height: 1.3em;
+  margin: -4px -4px 5px;
+  padding: 4px;
+}
+div.tooltip-title {
+  float: left;
+  height: 1.3em;
+  overflow: hidden;
+  padding-right: 10px;
+  width: 266px;
+}
+div.tooltip-title a {
+  color: $theme.menuLinkColor;
+}
+div.tooltip-close {
+  border-left: 1px solid $theme.borderColor; 
+  cursor: pointer;
+  float: left;
+  font-weight: bold;
+  margin: -4px 0;
+  padding: 3px 0 4px 3px;
+  position: absolute;
+  right: 3px;
+  text-align: center;
+  top : 4px;
+  width: 20px;
+}
+.tooltipHintById{
+  cursor: help;
+}
+/* --- */
+
+div.tooltip-topleft {
+  -moz-border-radius: 0 0.6em 0.6em 0.6em;
+}
+
+div.tooltip-topright {
+  -moz-border-radius: 0.6em 0 0.6em 0.6em;
+}
+
+div.tooltip-bottomleft {
+  -moz-border-radius: 10px 10px 10px 0;
+}
+
+div.tooltip-bottomright {
+  -moz-border-radius: 10px 10px 0 10px;
+}</code>
+</property>
+<property>
+<name></name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.TagClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<tags>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
+<name>tags</name>
+<number>1</number>
+<prettyName>Tags</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</tags>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.TagClass</className>
+<guid>85575f8b-3f2b-4777-a41c-48e2dd1e0806</guid>
+<property>
+<tags/>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>8</number>
+<prettyName>Macro code</prettyName>
+<rows>20</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<contentDescription>
+<disabled>0</disabled>
+<name>contentDescription</name>
+<number>7</number>
+<prettyName>Content description (Not applicable for "No content" type)</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</contentDescription>
+<contentType>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>contentType</name>
+<number>6</number>
+<prettyName>Macro content type</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator>|</separator>
+<separators>|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>Mandatory|Optional|No content</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</contentType>
+<defaultCategory>
+<disabled>0</disabled>
+<name>defaultCategory</name>
+<number>4</number>
+<prettyName>Default category</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultCategory>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>3</number>
+<prettyName>Macro description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<id>
+<disabled>0</disabled>
+<name>id</name>
+<number>1</number>
+<prettyName>Macro id</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</id>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>2</number>
+<prettyName>Macro name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<supportsInlineMode>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>supportsInlineMode</name>
+<number>5</number>
+<prettyName>Supports inline mode</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</supportsInlineMode>
+<visibility>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>visibility</name>
+<number>9</number>
+<prettyName>Macro visibility</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator>|</separator>
+<separators>|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>Current User|Current Wiki|Global</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</visibility>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.WikiMacroClass</className>
+<guid>202e6aad-d1fd-43a0-a54e-a7f54c74628b</guid>
+<property>
+<code>{{velocity output=false}}
+  #set($ok = $xwiki.jsx.use('XWiki.Tooltip', {'minify':false})) 
+  #set($ok = $xwiki.ssx.use('XWiki.Tooltip'))
+  #set($tooltipStyles = '')
+  #set($hintStyles = '')
+  #if("$!xcontext.macro.params.event" != "") 
+    #set($tooltipEvent = $!xcontext.macro.params.event)
+  #else
+    #set($tooltipEvent = 'mouseover')
+  #end
+  #if("$!xcontext.macro.params.style" != "")
+    #set($tooltipStyles = 'style="' + $!xcontext.macro.params.style + '"')
+  #end
+  #if("$!xcontext.macro.params.hint-style" != "")
+    #set($hintStyles = 'style="' + $!xcontext.macro.params.hint-style + '"')
+  #end
+{{/velocity}}{{velocity}}(%class="tooltipHint #if($!xcontext.macro.params.display-icon == false) withoutIcon#end" $!hintStyles%)#if("$!xcontext.macro.params.id" != "")(%class="tooltipLabelId hidden"%)$!xcontext.macro.params.id#else{{html clean=false}}$!xcontext.macro.params.label{{/html}}#end(%class="tooltip hidden" $!tooltipStyles %)${xcontext.macro.content}(%class="tooltipEvent hidden"%)$tooltipEvent{{/velocity}}</code>
+</property>
+<property>
+<contentDescription>The content to display in the tooltip</contentDescription>
+</property>
+<property>
+<contentType>Mandatory</contentType>
+</property>
+<property>
+<defaultCategory></defaultCategory>
+</property>
+<property>
+<description></description>
+</property>
+<property>
+<id>tooltip</id>
+</property>
+<property>
+<name>Tooltip</name>
+</property>
+<property>
+<supportsInlineMode>1</supportsInlineMode>
+</property>
+<property>
+<visibility>Current Wiki</visibility>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroParameterClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<defaultValue>
+<disabled>0</disabled>
+<name>defaultValue</name>
+<number>4</number>
+<prettyName>Parameter default value</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultValue>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>2</number>
+<prettyName>Parameter description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<mandatory>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>mandatory</name>
+<number>3</number>
+<prettyName>Parameter mandatory</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</mandatory>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Parameter name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+</class>
+<name>XWiki.Tooltip</name>
+<number>0</number>
+<className>XWiki.WikiMacroParameterClass</className>
+<guid>6a0f1682-0965-45e3-ba24-9110d20a81eb</guid>
+<property>
+<defaultValue></defaultValue>
+</property>
+<property>
+<description>An optional label to display the tooltip hint</description>
+</property>
+<property>
+<mandatory>0</mandatory>
+</property>
+<property>
+<name>label</name>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroParameterClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<defaultValue>
+<disabled>0</disabled>
+<name>defaultValue</name>
+<number>4</number>
+<prettyName>Parameter default value</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultValue>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>2</number>
+<prettyName>Parameter description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<mandatory>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>mandatory</name>
+<number>3</number>
+<prettyName>Parameter mandatory</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</mandatory>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Parameter name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+</class>
+<name>XWiki.Tooltip</name>
+<number>3</number>
+<className>XWiki.WikiMacroParameterClass</className>
+<guid>0a1770d3-f325-4fbc-a9f1-bc6eb1b2e7df</guid>
+<property>
+<defaultValue></defaultValue>
+</property>
+<property>
+<description>Optional event used for displaying the tooltip (the default event is 'mouseover')</description>
+</property>
+<property>
+<mandatory>0</mandatory>
+</property>
+<property>
+<name>event</name>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroParameterClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<defaultValue>
+<disabled>0</disabled>
+<name>defaultValue</name>
+<number>4</number>
+<prettyName>Parameter default value</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultValue>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>2</number>
+<prettyName>Parameter description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<mandatory>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>mandatory</name>
+<number>3</number>
+<prettyName>Parameter mandatory</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</mandatory>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Parameter name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+</class>
+<name>XWiki.Tooltip</name>
+<number>5</number>
+<className>XWiki.WikiMacroParameterClass</className>
+<guid>e9ca1a13-995d-4745-9f26-7aedb17ba5b6</guid>
+<property>
+<defaultValue></defaultValue>
+</property>
+<property>
+<description>Optional id of the HTML element used as tooltip hint</description>
+</property>
+<property>
+<mandatory>0</mandatory>
+</property>
+<property>
+<name>id</name>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroParameterClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<defaultValue>
+<disabled>0</disabled>
+<name>defaultValue</name>
+<number>4</number>
+<prettyName>Parameter default value</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultValue>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>2</number>
+<prettyName>Parameter description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<mandatory>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>mandatory</name>
+<number>3</number>
+<prettyName>Parameter mandatory</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</mandatory>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Parameter name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+</class>
+<name>XWiki.Tooltip</name>
+<number>9</number>
+<className>XWiki.WikiMacroParameterClass</className>
+<guid>25570fe5-0657-4407-b825-2f9efa8146f4</guid>
+<property>
+<defaultValue></defaultValue>
+</property>
+<property>
+<description>Optional CSS styles for the tooltip</description>
+</property>
+<property>
+<mandatory>0</mandatory>
+</property>
+<property>
+<name>style</name>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.WikiMacroParameterClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<defaultValue>
+<disabled>0</disabled>
+<name>defaultValue</name>
+<number>4</number>
+<prettyName>Parameter default value</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</defaultValue>
+<description>
+<disabled>0</disabled>
+<name>description</name>
+<number>2</number>
+<prettyName>Parameter description</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</description>
+<mandatory>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>mandatory</name>
+<number>3</number>
+<prettyName>Parameter mandatory</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</mandatory>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Parameter name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+</class>
+<name>XWiki.Tooltip</name>
+<number>10</number>
+<className>XWiki.WikiMacroParameterClass</className>
+<guid>0f6e4a4d-9e23-47e2-9b26-6118625d0ef4</guid>
+<property>
+<defaultValue></defaultValue>
+</property>
+<property>
+<description>Optional CSS styles for the tooltip hint</description>
+</property>
+<property>
+<mandatory>0</mandatory>
+</property>
+<property>
+<name>hint-style</name>
+</property>
+</object>
+<content>[[image:http://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Haeckel_Orchidae.jpg/425px-Haeckel_Orchidae.jpg||width="100" id="Haeckel_Orchidae"]] {{tooltip id="Haeckel_Orchidae" style="background-color: #f88158; border: none; color: #fff; padding: 10px; text-align: left; width: 230px;"}}Color plate from Ernst Haeckel's {{html}}&lt;i&gt;Kunstformen der Natur&lt;/i&gt;{{/html}}{{/tooltip}}
+
+Orchids belong to one of the two largest families of flowering plants, the Orchidaceae {{tooltip}}
+ Orchidaceae, commonly referred to as the Orchid family, is a morphologically diverse and widespread family of monocots.
+{{/tooltip}}. This family is comprised of about 1,000 genera and more than 15,000 species. They are botanically considered herbs, since they do not produce wood. Although many of the most exotic species are {{tooltip label="epiphytes" event="click"}}Said of a plant that grows upon another plant (such as a tree) non-parasitically or sometimes upon some other object (such as a building or a telegraph wire), derives its moisture and nutrients from the air and rain and sometimes from debris accumulating around it, and is found in the temperate zone (as many mosses, liverworts, lichens and algae) and in the tropics (as many ferns, cacti, orchids, and bromeliads) — called also air plants. {{html}}&lt;br /&gt;{{/html}} [[More details&gt;&gt;http://en.wikipedia.org/wiki/Orchidaceae]]{{/tooltip}}, many orchids are also terrestrial and saprophytic.
+
+Orchids have been cultivated for centuries. They include rare and recent discoveries such as the tiny Genoplesium plumosum, the large, showy orchids, which are featured in bouquets and corsages, and 'food' orchids such as {{tooltip label="Vanilla" style="background-image: url(http://www.backgroundlabs.com/backgrounds/40.jpg); color: #fff; padding: 20px; width: 400px;" hint-style="background-image: none; padding: 0px; color: #d6ae00; cursor: help;"}} Vanilla is a flavoring derived from orchids of the genus Vanilla native to Mexico. Etymologically, vanilla derives from the Spanish word "vainilla", little pod. Originally cultivated by Pre-Columbian Mesoamerican peoples, Spanish conquistador Hernán Cortés is credited with introducing both vanilla and chocolate to Europe in the 1520s. {{html}}&lt;br /&gt;{{/html}}  [[image:http://upload.wikimedia.org/wikipedia/commons/4/40/Vanilla_planifolia_1.jpg||width="70"]] {{/tooltip}}. A few orchids have insignificant flowers and are grown for their foliage.
+
+</content></xwikidoc>
