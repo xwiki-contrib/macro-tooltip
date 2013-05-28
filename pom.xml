@@ -32,7 +32,7 @@
   <groupId>org.xwiki.contrib</groupId>
   <artifactId>xwiki-tooltip-macro</artifactId>
   <version>1.2.5-SNAPSHOT</version>
-  <name>XWiki Tooltip Macro</name>
+  <name>Tooltip Macro</name>
   <packaging>xar</packaging>
   <description>Displays contextual information in a tooltip, when the user clicks or passes his mouse over a word or a sentence</description>
   <scm>
