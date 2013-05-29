@@ -738,22 +738,22 @@ div.tooltip-bottomright {
     <guid>202e6aad-d1fd-43a0-a54e-a7f54c74628b</guid>
     <property>
       <code>{{velocity output=false}}
-  #set($ok = $xwiki.jsx.use('XWiki.Tooltip', {'minify':false}))
-  #set($ok = $xwiki.ssx.use('XWiki.Tooltip'))
-  #set($tooltipStyles = '')
-  #set($hintStyles = '')
-  #if("$!xcontext.macro.params.event" != "")
-    #set($tooltipEvent = $!xcontext.macro.params.event)
+  #set ($discard = $xwiki.jsx.use('XWiki.Tooltip', {'minify':false}))
+  #set ($discard = $xwiki.ssx.use('XWiki.Tooltip'))
+  #set ($tooltipStyles = '')
+  #set ($hintStyles = '')
+  #if ("$!xcontext.macro.params.event" != '')
+    #set ($tooltipEvent = $!xcontext.macro.params.event)
   #else
-    #set($tooltipEvent = 'mouseover')
+    #set ($tooltipEvent = 'mouseover')
   #end
-  #if("$!xcontext.macro.params.style" != "")
-    #set($tooltipStyles = 'style="' + $!xcontext.macro.params.style + '"')
+  #if ("$!xcontext.macro.params.style" != '')
+    #set ($tooltipStyles = 'style="' + $!xcontext.macro.params.style + '"')
   #end
-  #if("$!xcontext.macro.params.hint-style" != "")
-    #set($hintStyles = 'style="' + $!xcontext.macro.params.hint-style + '"')
+  #if ("$!xcontext.macro.params.hint-style" != '')
+    #set ($hintStyles = 'style="' + $!xcontext.macro.params.hint-style + '"')
   #end
-{{/velocity}}{{velocity}}(%class="tooltipHint #if($!xcontext.macro.params.display-icon == false) withoutIcon#end" $!hintStyles%)#if("$!xcontext.macro.params.id" != "")(%class="tooltipLabelId hidden"%)$!xcontext.macro.params.id#else{{html clean=false}}$!xcontext.macro.params.label{{/html}}#end(%class="tooltip hidden" $!tooltipStyles %)${xcontext.macro.content}(%class="tooltipEvent hidden"%)$tooltipEvent{{/velocity}}</code>
+{{/velocity}}{{velocity}}(%class="tooltipHint#if ($!xcontext.macro.params.display-icon == false) withoutIcon#end" $!hintStyles %)#if ("$!xcontext.macro.params.id" != '')(%class="tooltipLabelId hidden"%)$!xcontext.macro.params.id#else{{html clean=false}}$!xcontext.macro.params.label{{/html}}#end(%class="tooltip hidden" $!tooltipStyles %)${xcontext.macro.content}(%class="tooltipEvent hidden"%)$tooltipEvent{{/velocity}}</code>
     </property>
     <property>
       <contentDescription>The content to display in the tooltip</contentDescription>
@@ -1113,10 +1113,9 @@ div.tooltip-bottomright {
   <content>[[image:http://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Haeckel_Orchidae.jpg/425px-Haeckel_Orchidae.jpg||width="100" id="Haeckel_Orchidae"]] {{tooltip id="Haeckel_Orchidae" style="background-color: #f88158; border: none; color: #fff; padding: 10px; text-align: left; width: 230px;"}}Color plate from Ernst Haeckel's {{html}}&lt;i&gt;Kunstformen der Natur&lt;/i&gt;{{/html}}{{/tooltip}}
 
 Orchids belong to one of the two largest families of flowering plants, the Orchidaceae {{tooltip}}
- Orchidaceae, commonly referred to as the Orchid family, is a morphologically diverse and widespread family of monocots.
+Orchidaceae, commonly referred to as the Orchid family, is a morphologically diverse and widespread family of monocots.
 {{/tooltip}}. This family is comprised of about 1,000 genera and more than 15,000 species. They are botanically considered herbs, since they do not produce wood. Although many of the most exotic species are {{tooltip label="epiphytes" event="click"}}Said of a plant that grows upon another plant (such as a tree) non-parasitically or sometimes upon some other object (such as a building or a telegraph wire), derives its moisture and nutrients from the air and rain and sometimes from debris accumulating around it, and is found in the temperate zone (as many mosses, liverworts, lichens and algae) and in the tropics (as many ferns, cacti, orchids, and bromeliads) — called also air plants. {{html}}&lt;br /&gt;{{/html}} [[More details&gt;&gt;http://en.wikipedia.org/wiki/Orchidaceae]]{{/tooltip}}, many orchids are also terrestrial and saprophytic.
 
 Orchids have been cultivated for centuries. They include rare and recent discoveries such as the tiny Genoplesium plumosum, the large, showy orchids, which are featured in bouquets and corsages, and 'food' orchids such as {{tooltip label="Vanilla" style="background-image: url(http://www.backgroundlabs.com/backgrounds/40.jpg); color: #fff; padding: 20px; width: 400px;" hint-style="background-image: none; padding: 0px; color: #d6ae00; cursor: help;"}} Vanilla is a flavoring derived from orchids of the genus Vanilla native to Mexico. Etymologically, vanilla derives from the Spanish word "vainilla", little pod. Originally cultivated by Pre-Columbian Mesoamerican peoples, Spanish conquistador Hernán Cortés is credited with introducing both vanilla and chocolate to Europe in the 1520s. {{html}}&lt;br /&gt;{{/html}}  [[image:http://upload.wikimedia.org/wikipedia/commons/4/40/Vanilla_planifolia_1.jpg||width="70"]] {{/tooltip}}. A few orchids have insignificant flowers and are grown for their foliage.
-
 </content>
 </xwikidoc>
