@@ -308,10 +308,14 @@ Tooltip.prototype = {
 
   setStyles: function(x, y){
     // set the right styles to position the tool tip
+    // The tooltip Opacity style is modified by  flamingo/style.css (.tooltip )
+    // We should force this as inline style, like the position.
+    // We will set the opacity to 1.1 and not 1 ( see : prototype opacity issue 145  )
     Element.setStyle(this.tool_tip, { position:'absolute',
                                       top:y + this.options.delta_y + "px",
                                       left:x + this.options.delta_x + "px",
-                                      zindex:this.options.zindex
+                                      zindex:this.options.zindex,
+                                      opacity:1.1
     });
 
     // apply default theme if wanted
